@@ -1,4 +1,4 @@
-package com.example.myhours;
+package com.flutter.myhours;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
