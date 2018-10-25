@@ -9,14 +9,16 @@ class CreateHourPage extends StatefulWidget {
 }
 
 class CreateHourPageState extends State<CreateHourPage> {
-  Hour _hour = Hour.createByHour(TimeOfDay.now());
-  String _selectedItem = 'Escolha uma categoria';
+  static final String _defaultSelectedItem = 'Escolha uma categoria';
+  Hour _hour = Hour(DateTime.now());
+  String _selectedItem = _defaultSelectedItem;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('Adicionar hora'),
+          actions: <Widget>[IconButton(icon: Icon(Icons.add), onPressed: () { _addNewHour(); })],
         ),
         body: Container(
             padding: EdgeInsets.all(20.0),
@@ -25,8 +27,17 @@ class CreateHourPageState extends State<CreateHourPage> {
                 _buildTimePicker(),
                 _buildCategories()
               ],
-            )));
+            )
+         )
+      );
   }
+
+  _addNewHour() {
+    Firestore.instance.collection('hours').add(<String, dynamic>{
+      'day': _hour.day
+    }).then((doc) => Navigator.pop(context));
+  }
+
 
   Widget _buildCategories() {
     return StreamBuilder(
@@ -54,7 +65,7 @@ class CreateHourPageState extends State<CreateHourPage> {
 
   List<DropdownMenuItem<String>> _buildDropdownList(List<DocumentSnapshot> document){
     List<DropdownMenuItem<String>> list = new List();
-    document.forEach((doc) => list.add(DropdownMenuItem(child: new Text(doc['name']), value: doc['name'],)));
+    document.forEach((doc) => list.add(DropdownMenuItem(child: new Text(doc['name']), value: doc['name'])));
     return list;
   }
 
@@ -90,7 +101,8 @@ class CreateHourPageState extends State<CreateHourPage> {
 
     setState(() {
       if(picked != null) {
-        _hour.setHour(picked);
+        DateTime currentDate = _hour.day;
+        _hour = Hour(DateTime(currentDate.year, currentDate.month, currentDate.day, picked.hour, picked.minute));
       }
     });
   }
