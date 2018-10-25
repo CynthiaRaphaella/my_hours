@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_hours/data/hour.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CreateHourPage extends StatefulWidget {
   static const String route = '/create';
@@ -9,14 +10,7 @@ class CreateHourPage extends StatefulWidget {
 
 class CreateHourPageState extends State<CreateHourPage> {
   Hour _hour = Hour.createByHour(TimeOfDay.now());
-  List<String> itens = ['primeira', 'segunda', 'terceira'];
-  String _selectedItem = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedItem = itens.elementAt(0);
-  }
+  String _selectedItem = 'Escolha uma categoria';
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +29,33 @@ class CreateHourPageState extends State<CreateHourPage> {
   }
 
   Widget _buildCategories() {
-    return InputDecorator(
-      decoration: InputDecoration(
-        labelText: 'Escolha uma categoria',
-        contentPadding: EdgeInsets.all(10.0),
-      ),
-      child: DropdownButton(
-        onChanged: (option) {
-          _selectCategory(option);
-        },
-        value: _selectedItem,
-        items: itens
-            .map((item) => DropdownMenuItem(child: Text(item), value: item))
-            .toList()));
+    return StreamBuilder(
+      stream: Firestore.instance.collection('categories').snapshots(),
+      builder: (context, snapshot) {
+        if(!snapshot.hasData) {
+          return Text('Carregando');
+        }
+        else {
+          return InputDecorator(
+            decoration: InputDecoration(
+              labelText: 'Escolha uma categoria',
+              contentPadding: EdgeInsets.all(10.0),
+            ),
+            child: 
+            DropdownButton(
+              onChanged: (option) {
+                _selectCategory(option);
+              },
+              hint: Text(_selectedItem),
+              items: _buildDropdownList(snapshot.data.documents)));
+        }
+      });
+  }
+
+  List<DropdownMenuItem<String>> _buildDropdownList(List<DocumentSnapshot> document){
+    List<DropdownMenuItem<String>> list = new List();
+    document.forEach((doc) => list.add(DropdownMenuItem(child: new Text(doc['name']), value: doc['name'],)));
+    return list;
   }
 
   void _selectCategory(option) {
