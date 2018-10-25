@@ -18,7 +18,7 @@ class CreateHourPageState extends State<CreateHourPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Adicionar hora'),
-          actions: <Widget>[IconButton(icon: Icon(Icons.add), onPressed: () { _addNewHour(); })],
+          actions: <Widget>[IconButton(icon: Icon(Icons.check), onPressed: () { _addNewHour(); })],
         ),
         body: Container(
             padding: EdgeInsets.all(20.0),
