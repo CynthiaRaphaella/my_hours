@@ -20,7 +20,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: StreamBuilder(
-          stream: Firestore.instance.collection('hours').snapshots(),
+          stream: Firestore.instance.collection('hours').where('category', isEqualTo: 'Projeto').snapshots(),
           builder: (context, snapshot) {
             if(!snapshot.hasData) {
               return Text('Carregando');

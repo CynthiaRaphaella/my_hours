@@ -33,9 +33,12 @@ class CreateHourPageState extends State<CreateHourPage> {
   }
 
   _addNewHour() {
-    Firestore.instance.collection('hours').add(<String, dynamic>{
-      'day': _hour.day
-    }).then((doc) => Navigator.pop(context));
+    if(_selectedItem != _defaultSelectedItem) {
+      Firestore.instance.collection('hours').add(<String, dynamic>{
+        'day': _hour.day,
+        'category': _selectedItem
+      }).then((doc) => Navigator.pop(context));
+    }
   }
 
 
