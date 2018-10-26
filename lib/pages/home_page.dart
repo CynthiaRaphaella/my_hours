@@ -18,9 +18,33 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
+      body: FutureBuilder(
+        future: _getAllCategories(),
+        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting) {
+            return Text('a');
+          }
+          else {
+            return Column(
+              children: snapshot.data.map((data) => _buildHourWidget(data)).toList(),
+            );
+          }
+        }
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){_performAddNewHour(context); },
+        tooltip: 'Add hour',
+        child: Icon(Icons.add),
+      ), 
+    );
+  }
+
+  Widget _buildHourWidget(String category) {
+    return Card(
+        margin: EdgeInsets.all(20.0),
+        color: Color(Colors.blueAccent.value),
         child: StreamBuilder(
-          stream: Firestore.instance.collection('hours').where('category', isEqualTo: 'Projeto').snapshots(),
+          stream: Firestore.instance.collection('hours').where('category', isEqualTo: category).snapshots(),
           builder: (context, snapshot) {
             if(!snapshot.hasData) {
               return Text('Carregando');
@@ -28,21 +52,22 @@ class _MyHomePageState extends State<MyHomePage> {
             else {
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: _buildHours(snapshot.data.documents, context),
+                children: _retrieveHours(snapshot.data.documents, context),
               );
             }
           }
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){_performAddNewHour(context);},
-        tooltip: 'Add hour',
-        child: Icon(Icons.add),
-      ), 
-    );
+      );
   }
 
-  List<Text> _buildHours(List<DocumentSnapshot> document, BuildContext context) {
+  Future<List<String>> _getAllCategories() async{
+    List<String> allCategories = new List();
+    QuerySnapshot snapshot = await Firestore.instance.collection('categories').getDocuments();
+    snapshot.documents.forEach((doc) => allCategories.add(doc['name']));
+    return allCategories;
+  }
+
+  List<Text> _retrieveHours(List<DocumentSnapshot> document, BuildContext context) {
     List<Text> list = new List();
     document.forEach((doc) => list.add(Text(Hour(doc['day']).getHourFormated(context))));
     return list;
