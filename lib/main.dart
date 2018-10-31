@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         CreateHourPage.route: (BuildContext context) => CreateHourPage(),
       },
-      home: MyHomePage(title: 'Minhas horas'),
+      home: MyHomePage(),
     );
   }
 }
