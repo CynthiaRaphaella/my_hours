@@ -40,24 +40,30 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildHourWidget(String category) {
-    return Card(
-        margin: EdgeInsets.all(20.0),
-        color: Color(Colors.blueAccent.value),
-        child: StreamBuilder(
+
+    return Container(
+      child: StreamBuilder(
           stream: Firestore.instance.collection('hours').where('category', isEqualTo: category).snapshots(),
           builder: (context, snapshot) {
             if(!snapshot.hasData) {
               return Text('Carregando');
             }
             else {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: _retrieveHours(snapshot.data.documents, context),
+              List<String> hoursByCategory = _retrieveHours(snapshot.data.documents, context);
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: hoursByCategory.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(hoursByCategory[index]),
+                    subtitle: Text(category),
+                  );
+                },
               );
             }
           }
         ),
-      );
+    );
   }
 
   Future<List<String>> _getAllCategories() async{
@@ -67,9 +73,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return allCategories;
   }
 
-  List<Text> _retrieveHours(List<DocumentSnapshot> document, BuildContext context) {
-    List<Text> list = new List();
-    document.forEach((doc) => list.add(Text(Hour(doc['day']).getHourFormated(context))));
+  List<String> _retrieveHours(List<DocumentSnapshot> document, BuildContext context) {
+    List<String> list = new List();
+    document.forEach((doc) => list.add(Hour(doc['day']).getHourFormated(context)));
     return list;
   }
 
