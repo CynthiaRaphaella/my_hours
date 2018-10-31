@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:my_hours/pages/hours_by_day_page.dart';
+import 'package:my_hours/pages/hours_by_week_page.dart';
 
 class CustomDrawer extends StatelessWidget {
 
@@ -22,10 +24,18 @@ class CustomDrawer extends StatelessWidget {
             ListTile(
               title: Text('Dia', style: TextStyle(fontSize: 20.0, color: Colors.black54)),
               trailing: Icon(Icons.calendar_view_day),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, HoursByDayPage.route);
+              },
             ),
             ListTile(
               title: Text('Semana', style: TextStyle(fontSize: 20.0, color: Colors.black54)),
               trailing: Icon(Icons.calendar_today),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, HoursByWeekPage.route);
+              },
             )
           ],
         ),

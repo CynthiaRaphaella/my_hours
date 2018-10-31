@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:my_hours/UI/CustomScaffold.dart';
 import 'package:my_hours/data/hour.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 class HoursByDayPage extends StatefulWidget {
+  static const String route = '/day';
   @override
   State<StatefulWidget> createState() => HoursByDayPageState();
 }
@@ -11,7 +13,8 @@ class HoursByDayPage extends StatefulWidget {
 class HoursByDayPageState extends State<HoursByDayPage> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return CustomScaffold(
+      body: FutureBuilder(
         future: _getAllCategories(),
         builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
           if(snapshot.connectionState == ConnectionState.waiting) {
@@ -23,7 +26,8 @@ class HoursByDayPageState extends State<HoursByDayPage> {
             );
           }
         }
-      );
+      )
+    );
   }
 
   Widget _buildHourWidget(String category) {
